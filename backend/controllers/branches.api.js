@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Branch = require('../models/branches');
-const branchValidation = require('../validation/branches.validation');
+const branchValidation = require('../validations/branches.validation');
 
 // Create a Branch
 const createBranch = async (req, res, next) => {

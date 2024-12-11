@@ -1,5 +1,5 @@
 const Company = require('../models/companies');
-const { companyValidation } = require('../validation/companies.validation');
+const { companyValidation } = require('../validations/companies.validation');
 
 // Create a company
 const createCompany = async (req, res, next) => {

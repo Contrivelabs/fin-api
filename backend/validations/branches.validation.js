@@ -14,10 +14,14 @@ const branchValidation = (data) => {
 			'string.empty': 'Branch address is required.',
 			'any.required': 'Branch address is required.',
 		}),
-		companyId: Joi.string().required().messages({
-			'string.empty': 'Company ID is required.',
-			'any.required': 'Company ID is required.',
-		}),
+		companyId: Joi.string()
+			.pattern(/^[a-fA-F0-9]{24}$/)
+			.required()
+			.messages({
+				'string.pattern.base': 'Invalid company ID format.',
+				'string.empty': 'Company ID is required.',
+				'any.required': 'Company ID is required.',
+			}),
 		email: Joi.string().email().required().messages({
 			'string.base': 'Email must be a valid string.',
 			'string.email': 'Please provide a valid email address.',

@@ -12,9 +12,11 @@ app.use(express.urlencoded({ extended: true }));
 
 const companiesRoutes = require('./backend/routes/companies');
 const branchesRoutes = require('./backend/routes/branches');
+const usersRoutes = require('./backend/routes/users');
 
 app.use('/api/companies', companiesRoutes);
 app.use('/api/branches', branchesRoutes);
+app.use('/api/users', usersRoutes);
 
 app.get('/', (req, res) => {
 	res.send('FIN-API backend Running');

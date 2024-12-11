@@ -3,6 +3,12 @@ const mongoose = require('mongoose');
 const companySchema = new mongoose.Schema({
 	name: {
 		type: String,
+		required: [true, 'Name is required'],
+		minlength: 3,
+		maxlength: 100,
+	},
+	companyName: {
+		type: String,
 		required: [true, 'Company name is required'],
 		minlength: 3,
 		maxlength: 100,
