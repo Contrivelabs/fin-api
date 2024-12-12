@@ -80,7 +80,7 @@ const userSchema = new mongoose.Schema({
 			message: (props) =>
 				`'${props.value}' is not a valid ObjectId for field '${props.path}'`,
 		},
-	}, // Reference to the company this branch belongs to
+	}, // Reference to the company
 	branchId: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'Branch',
@@ -109,6 +109,16 @@ userSchema.index({ primaryPhoneNo: 1 }, { unique: true });
 // Pre-save hook to update the `updatedAt` field
 userSchema.pre('save', function (next) {
 	this.updatedAt = Date.now();
+	next();
+});
+
+userSchema.pre('findOneAndUpdate', function (next) {
+	this.set({ updatedAt: Date.now() });
+	next();
+});
+
+userSchema.pre('updateOne', function (next) {
+	this.set({ updatedAt: Date.now() });
 	next();
 });
 

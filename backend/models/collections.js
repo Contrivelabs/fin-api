@@ -27,4 +27,14 @@ const collectionSchema = new mongoose.Schema({
 	updatedAt: { type: Date, default: Date.now },
 });
 
+collectionSchema.pre('findOneAndUpdate', function (next) {
+	this.set({ updatedAt: Date.now() });
+	next();
+});
+
+collectionSchema.pre('updateOne', function (next) {
+	this.set({ updatedAt: Date.now() });
+	next();
+});
+
 module.exports = mongoose.model('Collection', collectionSchema);

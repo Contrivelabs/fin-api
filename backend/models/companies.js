@@ -52,6 +52,16 @@ const companySchema = new mongoose.Schema({
 companySchema.index({ email: 1 }, { unique: true });
 companySchema.index({ phone: 1 }, { unique: true });
 
+companySchema.pre('findOneAndUpdate', function (next) {
+	this.set({ updatedAt: Date.now() });
+	next();
+});
+
+companySchema.pre('updateOne', function (next) {
+	this.set({ updatedAt: Date.now() });
+	next();
+});
+
 const Company = mongoose.model('Company', companySchema);
 
 // Manually trigger index creation if needed (e.g., in a development environment)

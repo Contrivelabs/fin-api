@@ -24,7 +24,7 @@ const branchSchema = new mongoose.Schema({
 			message: (props) =>
 				`'${props.value}' is not a valid ObjectId for field '${props.path}'`,
 		},
-	}, // Reference to the company this branch belongs to
+	}, // Reference to the company
 	email: {
 		type: String,
 		validate: {
@@ -55,6 +55,16 @@ const branchSchema = new mongoose.Schema({
 		type: Date,
 		default: Date.now,
 	},
+});
+
+branchSchema.pre('findOneAndUpdate', function (next) {
+	this.set({ updatedAt: Date.now() });
+	next();
+});
+
+branchSchema.pre('updateOne', function (next) {
+	this.set({ updatedAt: Date.now() });
+	next();
 });
 
 module.exports = mongoose.model('Branch', branchSchema);

@@ -30,4 +30,14 @@ const roleSchema = new mongoose.Schema({
 	updatedAt: { type: Date, default: Date.now },
 });
 
+roleSchema.pre('findOneAndUpdate', function (next) {
+	this.set({ updatedAt: Date.now() });
+	next();
+});
+
+roleSchema.pre('updateOne', function (next) {
+	this.set({ updatedAt: Date.now() });
+	next();
+});
+
 module.exports = mongoose.model('Role', roleSchema);

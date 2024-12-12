@@ -67,4 +67,14 @@ const loanSchema = new mongoose.Schema({
 	updatedAt: { type: Date, default: Date.now }, // Record last updated date
 });
 
+loanSchema.pre('findOneAndUpdate', function (next) {
+	this.set({ updatedAt: Date.now() });
+	next();
+});
+
+loanSchema.pre('updateOne', function (next) {
+	this.set({ updatedAt: Date.now() });
+	next();
+});
+
 module.exports = mongoose.model('Loan', loanSchema);
