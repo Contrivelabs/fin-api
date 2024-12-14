@@ -44,10 +44,16 @@ const updateCompany = async (req, res, next) => {
 	if (error) return res.status(400).json({ message: error.details[0].message });
 
 	try {
-		const company = await Company.findByIdAndUpdate(req.params.id, req.body, {
-			new: true,
-			runValidators: true,
-		});
+		// Validate and sanitize input
+		const { error, value: sanitizedBody } = companyValidation(req.body);
+		const company = await Company.findByIdAndUpdate(
+			req.params.id,
+			sanitizedBody,
+			{
+				new: true,
+				runValidators: true,
+			}
+		);
 		if (!company) return res.status(404).json({ message: 'Company not found' });
 		return res
 			.status(200)
