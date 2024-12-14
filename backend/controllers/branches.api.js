@@ -63,15 +63,19 @@ const getBranchById = async (req, res, next) => {
 
 // Update a Branch
 const updateBranch = async (req, res, next) => {
+	const { error } = branchValidation(req.body);
+	if (error) return res.status(400).json({ message: error.details[0].message });
 	try {
-		const { error } = branchValidation(req.body);
-		if (error)
-			return res.status(400).json({ message: error.details[0].message });
-
-		const branch = await Branch.findByIdAndUpdate(req.params.id, req.body, {
-			new: true,
-			runValidators: true,
-		});
+		// Validate and sanitize input
+		const { error, value: sanitizedBody } = branchValidation(req.body);
+		const branch = await Branch.findByIdAndUpdate(
+			req.params.id,
+			sanitizedBody,
+			{
+				new: true,
+				runValidators: true,
+			}
+		);
 		if (!branch) return res.status(404).json({ message: 'Branch not found' });
 		return res
 			.status(200)

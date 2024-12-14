@@ -52,18 +52,16 @@ const getPermissionById = async (req, res, next) => {
 
 // Update Permission
 const updatePermission = async (req, res, next) => {
+	const { error } = permissionValidation(req.body);
+	if (error) return res.status(400).json({ message: error.details[0].message });
+
 	try {
-		const { error } = permissionValidation(req.body);
-		if (error) {
-			return res.status(400).json({
-				message: 'Validation error',
-				errors: error.details.map((e) => e.message),
-			});
-		}
+		// Validate and sanitize input
+		const { error, value: sanitizedBody } = permissionValidation(req.body);
 
 		const permission = await Permission.findByIdAndUpdate(
 			req.params.id,
-			req.body,
+			sanitizedBody,
 			{
 				new: true,
 				runValidators: true,

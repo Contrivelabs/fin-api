@@ -64,14 +64,16 @@ exports.getUserById = async (req, res, next) => {
 
 // Update User
 exports.updateUser = async (req, res, next) => {
+	// Validate Request Body
+	const { error } = validateUser(req.body);
+	if (error) {
+		return res.status(400).json({ message: error.details[0].message });
+	}
 	try {
-		// Validate Request Body
-		const { error } = validateUser(req.body);
-		if (error) {
-			return res.status(400).json({ message: error.details[0].message });
-		}
+		// Validate and sanitize input
+		const { error, value: sanitizedBody } = validateUser(req.body);
 
-		const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+		const user = await User.findByIdAndUpdate(req.params.id, sanitizedBody, {
 			new: true,
 			runValidators: true,
 		});
