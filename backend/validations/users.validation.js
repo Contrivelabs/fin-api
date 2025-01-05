@@ -42,7 +42,6 @@ const validateUser = (data) => {
 		activeStatus: Joi.boolean(),
 		role: Joi.string()
 			.pattern(/^[a-fA-F0-9]{24}$/)
-			.required()
 			.messages({
 				'string.pattern.base': 'Invalid role format.',
 			}),

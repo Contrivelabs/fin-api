@@ -23,7 +23,7 @@ const errorHandler = (err, req, res, next) => {
 		const field = Object.keys(err.keyValue)[0];
 		const value = Object.values(err.keyValue)[0];
 		return res.status(400).json({
-			message: `${field} already exists`,
+			message: `${value} already exists`,
 			errors: `Duplicate value for field '${field}': '${value}'`,
 		});
 	}
