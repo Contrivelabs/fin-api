@@ -3,9 +3,10 @@ const Joi = require('joi');
 // Validation Schema for User
 const validateUser = (data) => {
 	const schema = Joi.object({
-		name: Joi.string().min(3).max(50).required().messages({
+		name: Joi.string().pattern(/^[a-zA-Z0-9 _-]+$/).min(3).max(50).required().messages({
 			'string.base': 'Name must be a string.',
 			'string.empty': 'Name is required.',
+			'string.pattern.base': 'Name can only contain letters, numbers, spaces, underscores (_), and hyphens (-).',
 			'string.min': 'Name should have at least 3 characters.',
 			'string.max': 'Name should not exceed 50 characters.',
 			'any.required': 'Name is required.',
@@ -29,14 +30,21 @@ const validateUser = (data) => {
 				'string.pattern.base':
 					'Alternate phone number must be a 10-digit number.',
 			}),
-		city: Joi.string().max(100).allow(null, ''),
-		collectionRoute: Joi.string().required().messages({
-			'any.required': 'Collection route is required.',
+		city: Joi.string().pattern(/^[a-zA-Z0-9 _\-&]+$/).max(100).allow(null, '').messages({
+			'string.pattern.base': 'City can only contain letters, numbers, spaces, underscores (_), hyphens (-), and ampersands (&).',
 		}),
-		address: Joi.string().max(255).allow(null, ''),
+		collectionRoute: Joi.pattern(/^[a-zA-Z0-9 _\-&]+$/).string().required().messages({
+			'any.required': 'Collection route is required.',
+			'string.pattern.base': 'Route can only contain letters, numbers, spaces, underscores (_), hyphens (-), and ampersands (&).',
+		}),
+		address: Joi.string().pattern(/^[a-zA-Z0-9 _\-&]+$/).max(255).allow(null, '').messages({
+			'string.pattern.base': 'Address can only contain letters, numbers, spaces, underscores (_), hyphens (-), and ampersands (&).',
+		}),
 		idType: Joi.string().valid('Aadhar', 'PAN', 'Passport').allow(null, ''),
 		idProof: Joi.string().uri().allow(null, ''),
-		additionalNotes: Joi.string().max(500).allow(null, ''),
+		additionalNotes: Joi.string().pattern(/^[a-zA-Z0-9 _\-&]+$/).max(500).allow(null, '').messages({
+			'string.pattern.base': 'Additional notes can only contain letters, numbers, spaces, underscores (_), hyphens (-), and ampersands (&).',
+		}),
 		otp: Joi.string().max(6).allow(null, ''),
 		otpExpireDateTime: Joi.date().allow(null, ''),
 		activeStatus: Joi.boolean(),
