@@ -26,7 +26,7 @@ const getPermissions = async (req, res, next) => {
 			{ activeStatus: true },
 			{ name: 1, groupName: 1, description: 1, _id: 1 }
 		);
-		return res.status(200).json({ message: 'Success', data: permissions });
+		return res.status(200).json({ message: 'success', data: permissions });
 	} catch (err) {
 		next(err);
 	}
@@ -44,7 +44,7 @@ const getPermissionById = async (req, res, next) => {
 		if (!permission) {
 			return res.status(404).json({ message: 'Permission not found' });
 		}
-		return res.status(200).json({ message: 'Success', data: permission });
+		return res.status(200).json({ message: 'success', data: permission });
 	} catch (err) {
 		next(err);
 	}

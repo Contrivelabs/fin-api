@@ -39,6 +39,20 @@ const roleSchema = new mongoose.Schema({
 		type: Boolean,
 		default: true,
 	},
+	default: {
+		type: Boolean,
+		default: false,
+	},
+	type: {
+		type: String,
+		enum: ['system', 'custom'],
+		default: 'custom',
+	},
+	roleType: {
+		type: String,
+		enum: ['owner', 'customer', 'staff'],
+		default: 'customer',
+	},
 	createdAt: { type: Date, default: Date.now },
 	updatedAt: { type: Date, default: Date.now },
 });

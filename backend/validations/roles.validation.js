@@ -37,6 +37,24 @@ const roleValidation = (data) => {
 		activeStatus: Joi.boolean().messages({
 			'boolean.base': 'Active status must be true or false',
 		}),
+		default: Joi.boolean().messages({
+			'boolean.base': 'Default status must be true or false',
+		}),
+		type: Joi.string().valid('system', 'custom').default('custom').messages({
+			'any.only': 'Type must be either "system" or "custom"',
+		}),
+		roleType: Joi.string()
+			.valid('owner', 'customer', 'staff')
+			.default('customer')
+			.messages({
+				'any.only': 'Role type must be either "owner", "customer", or "staff"',
+			}),
+		createdAt: Joi.date().default(Date.now).messages({
+			'date.base': 'Created at must be a valid date',
+		}),
+		updatedAt: Joi.date().default(Date.now).messages({
+			'date.base': 'Updated at must be a valid date',
+		}),
 	});
 
 	return schema.validate(data);

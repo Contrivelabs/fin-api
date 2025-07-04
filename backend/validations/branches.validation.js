@@ -8,12 +8,20 @@ const branchValidation = (data) => {
 			'string.empty': 'Branch name is required.',
 			'any.required': 'Branch name is required.',
 		}),
-		address: Joi.string().min(10).max(255).required().messages({
+		address: Joi.string().min(10).max(255).messages({
 			'string.min': 'Branch address must be at least 10 characters long.',
 			'string.max': 'Branch address cannot exceed 255 characters.',
 			'string.empty': 'Branch address is required.',
 			'any.required': 'Branch address is required.',
 		}),
+			userId: Joi.string()
+			.pattern(/^[a-fA-F0-9]{24}$/)
+			.required()
+			.messages({
+				'string.pattern.base': 'Invalid User ID format.',
+				'string.empty': 'User ID is required.',
+				'any.required': 'User ID is required.',
+			}),
 		companyId: Joi.string()
 			.pattern(/^[a-fA-F0-9]{24}$/)
 			.required()
@@ -22,13 +30,12 @@ const branchValidation = (data) => {
 				'string.empty': 'Company ID is required.',
 				'any.required': 'Company ID is required.',
 			}),
-		email: Joi.string().email().required().messages({
+		email: Joi.string().email().messages({
 			'string.base': 'Email must be a valid string.',
 			'string.email': 'Please provide a valid email address.',
 		}),
 		phone: Joi.string()
 			.pattern(/^[0-9]{10}$/)
-			.required()
 			.messages({
 				'string.base': 'Phone number must be a valid string.',
 				'string.pattern.base': 'Phone number must be a 10-digit number.',
@@ -36,9 +43,12 @@ const branchValidation = (data) => {
 		activeStatus: Joi.boolean().messages({
 			'boolean.base': 'Active status must be true or false.',
 		}),
+		default: Joi.boolean().messages({
+			'boolean.base': 'Default branch status must be true or false.',
+		}),
 	});
 
 	return schema.validate(data);
 };
 
-module.exports = branchValidation;
+module.exports = {branchValidation};

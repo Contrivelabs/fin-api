@@ -26,7 +26,7 @@ exports.getRoles = async (req, res, next) => {
 			.populate('permissions')
 			.populate('companyId')
 			.populate('branchId');
-		return res.status(200).json({ message: 'Success', data: roles });
+		return res.status(200).json({ message: 'success', data: roles });
 	} catch (err) {
 		next(err);
 	}
@@ -40,7 +40,7 @@ exports.getRoleById = async (req, res, next) => {
 			.populate('companyId')
 			.populate('branchId');
 		if (!role) return res.status(404).json({ message: 'Role not found' });
-		return res.status(200).json({ message: 'Success', data: role });
+		return res.status(200).json({ message: 'success', data: role });
 	} catch (err) {
 		next(err);
 	}

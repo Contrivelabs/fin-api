@@ -5,6 +5,7 @@ const {
 	getCompanyById,
 	updateCompany,
 	deleteCompany,
+	getCompaniesByUserId
 } = require('../controllers/companies.api');
 //const { authMiddleware, roleMiddleware } = require('./auth.middleware');
 
@@ -19,5 +20,6 @@ router.get('/', getCompanies); //roleMiddleware(['admin', 'manager']),
 router.get('/:id', getCompanyById); //roleMiddleware(['admin', 'manager']),
 router.put('/:id', updateCompany); //roleMiddleware(['admin']),
 router.delete('/:id', deleteCompany); //roleMiddleware(['admin']),
+router.post('/by-user', getCompaniesByUserId); // Get companies by user ID
 
 module.exports = router;

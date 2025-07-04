@@ -9,10 +9,22 @@ const branchSchema = new mongoose.Schema({
 	}, // Branch name (e.g., "Bangalore Branch")
 	address: {
 		type: String,
-		required: [true, 'Branch address is required'],
+		required: [false, 'Branch address is required'],
 		minlength: 10,
 		maxlength: 255,
 	}, // Full address of the branch
+	userId: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: 'User',
+		required: [true, 'User ID is required'],
+		validate: {
+			validator: function (v) {
+				return mongoose.Types.ObjectId.isValid(v);
+			},
+			message: (props) =>
+				`'${props.value}' is not a valid ObjectId for field '${props.path}'`,
+		}
+	}, // Reference to the company
 	companyId: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'Company',
@@ -23,7 +35,7 @@ const branchSchema = new mongoose.Schema({
 			},
 			message: (props) =>
 				`'${props.value}' is not a valid ObjectId for field '${props.path}'`,
-		},
+		}
 	}, // Reference to the company
 	email: {
 		type: String,
@@ -42,6 +54,10 @@ const branchSchema = new mongoose.Schema({
 			},
 			message: 'Phone number must be a 10-digit number',
 		},
+	},
+	default: {
+		type: Boolean,
+		default: false,
 	},
 	activeStatus: {
 		type: Boolean,

@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
+const otpGenerator = require('otp-generator');
 
 const userSchema = new mongoose.Schema({
 	name: {
@@ -9,7 +11,7 @@ const userSchema = new mongoose.Schema({
 	},
 	email: {
 		type: String,
-		unique: true, // Ensures email is unique
+		//unique: true, // Ensures email is unique
 		sparse: true, // Allows null values while enforcing uniqueness
 		validate: {
 			validator: (v) =>
@@ -39,7 +41,7 @@ const userSchema = new mongoose.Schema({
 	},
 	collectionRoute: {
 		type: String,
-		required: [true, 'Collection route is required'],
+		required: [false, 'Collection route is required'],
 		minlength: [3, 'Collection route must be at least 3 characters'],
 		maxlength: [100, 'Collection route must be at most 100 characters'],
 	},
@@ -69,37 +71,18 @@ const userSchema = new mongoose.Schema({
 				`'${props.value}' is not a valid ObjectId for field '${props.path}'`,
 		},
 	},
-	companyId: {
-		type: mongoose.Schema.Types.ObjectId,
-		ref: 'Company',
-		required: [true, 'Company ID is required'],
-		validate: {
-			validator: function (v) {
-				return mongoose.Types.ObjectId.isValid(v);
-			},
-			message: (props) =>
-				`'${props.value}' is not a valid ObjectId for field '${props.path}'`,
-		},
-	}, // Reference to the company
-	branchId: {
-		type: mongoose.Schema.Types.ObjectId,
-		ref: 'Branch',
-		validate: {
-			validator: function (v) {
-				return mongoose.Types.ObjectId.isValid(v);
-			},
-			message: (props) =>
-				`'${props.value}' is not a valid ObjectId for field '${props.path}'`,
-		},
-	},
 	userType: {
 		type: String,
 		enum: {
 			values: ['customer', 'collector'],
 			message: "User type must be either 'customer' or 'collector'",
 		},
-		required: [true, 'User type is required'],
+		required: [false, 'User type is required'],
 	},
+	refreshToken: {
+    type: String,
+    default: null, // Optional for non-authenticated users
+  },
 });
 
 // Adding indexes for `email` and `primaryPhoneNo`
@@ -121,5 +104,42 @@ userSchema.pre('updateOne', function (next) {
 	this.set({ updatedAt: Date.now() });
 	next();
 });
+
+
+
+userSchema.methods.generateJWT = function (id) {
+	const payload = {};
+	const token = 'FINAPP_USERS';
+	const option = {
+		expiresIn: '5h',
+		issuer: 'contriveLabs.org',
+		audience: id,
+	};
+	return jwt.sign(payload, token, option);
+};
+
+userSchema.methods.generateRefreshJWT = function (id) {
+	const payload = {};
+	const token = 'FINAPP_USER_REFRESH';
+	const option = {
+		expriesIn: '1y',
+		issuer: 'contriveLabs.org',
+		audience: id,
+	};
+	return jwt.sign(payload, token, option);
+};
+
+userSchema.methods.generateOTP = function () {
+	let otp = otpGenerator.generate(6, {
+		alphabets: false,
+		lowerCaseAlphabets: false,
+		upperCaseAlphabets: false,
+		specialChars: false,
+		digits:true
+	});
+	this.otp = String(otp);
+	console.log('GENERATED OTP', this.otp);
+	this.otpExpireDateTime = Date.now() + 86400000; // For 24 hour in ms
+};
 
 module.exports = mongoose.model('User', userSchema);

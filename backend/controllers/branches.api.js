@@ -32,7 +32,7 @@ const createBranch = async (req, res, next) => {
 const getAllBranches = async (req, res, next) => {
 	try {
 		const branches = await Branch.find();
-		return res.status(200).json({ message: 'Success', data: branches });
+		return res.status(200).json({ message: 'success', data: branches });
 	} catch (err) {
 		next(err);
 	}
@@ -55,7 +55,7 @@ const getBranchById = async (req, res, next) => {
 		if (!branch) {
 			return res.status(404).json({ message: 'Branch not found' });
 		}
-		return res.status(200).json({ message: 'Success', data: branch });
+		return res.status(200).json({ message: 'success', data: branch });
 	} catch (err) {
 		next(err);
 	}
@@ -96,10 +96,34 @@ const deleteBranch = async (req, res, next) => {
 	}
 };
 
+//Get Branches by Company ID
+const getBranchesByCompanyId = async (req, res, next) => {
+	try {
+		console.log('Request body: getBranchesByCompanyId', req.body);
+		const companyId = req.body.companyId;
+		if (!mongoose.Types.ObjectId.isValid(companyId)) {
+			return res.status(400).json({
+				message: 'Validation error',
+				errors: [`Invalid ObjectId: '${companyId}' for field 'companyId'`],
+			});
+		}
+		const branches = await Branch.find({ companyId, activeStatus: true });
+		if (branches.length === 0) {
+			return res.status(404).json({ message: 'No branches found for this company' });
+		}
+		return res.status(200).json({ message: 'success', data: branches });
+	}
+	catch (err) {
+		next(err);
+	}
+}
+// Export the functions for use in routes
+
 module.exports = {
 	createBranch,
 	getAllBranches,
 	getBranchById,
 	updateBranch,
 	deleteBranch,
+	getBranchesByCompanyId
 };
