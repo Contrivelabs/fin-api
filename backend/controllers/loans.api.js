@@ -70,9 +70,72 @@ const getLoans = async (req, res, next) => {
 
 const getLoanById = async (req, res, next) => {
   try {
-    const loan = await Loan.findById(req.params.id);
+    //const loan = await Loan.findById(req.params.id);
+    const loan = await Loan.aggregate([
+      { $match: { _id: new mongoose.Types.ObjectId(req.params.id) } },
+      {
+        $lookup: {
+          from: 'customers',
+          localField: 'customerId',
+          foreignField: '_id',
+          as: 'customerInfo'
+        } 
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'loanIssuedBy',
+          foreignField: '_id',
+          as: 'loanIssuerInfo'
+        }
+      },
+      {
+        $lookup: {
+          from: 'staffs',
+          localField: 'collectorId',
+          foreignField: '_id',
+          as: 'collectorInfo'
+        }
+      },
+      {
+        $addFields: {
+          customerName: { $arrayElemAt: ['$customerInfo.name', 0] },
+          loanIssuedByName: { $arrayElemAt: ['$loanIssuerInfo.name', 0] },
+          collectorIdName: { $arrayElemAt: ['$collectorInfo.name', 0] },
+          customerPrimaryPhoneNo: { $arrayElemAt: ['$customerInfo.primaryPhoneNo', 0] },
+        }
+      },
+      {
+        $project: {
+          loanId: 1,
+          customerId: 1,
+          customerName: 1,
+          customerPrimaryPhoneNo: 1,
+          customLoanId: 1, 
+          loanType: 1,
+          loanAmount: 1,
+          paymentFrequency: 1,
+          numOfDues: 1,
+          interestRate: 1,
+          deduction: 1,
+          amountIssued: 1,
+          amountIssuedDate: 1,
+          dueAmount: 1,
+          firstDueDate: 1,
+          lastDueDate: 1,
+          loanIssuedBy: 1,
+          loanIssuedByName: 1,
+          collectorId: 1,
+          collectorIdName: 1,
+          paymentMethod: 1,
+          createdAt: 1,
+          updatedAt: 1
+        }
+      }
+    ]);
+
     if (!loan) return res.status(404).json({ message: 'Loan not found' });
-    res.status(200).json(loan);
+    res.status(201).json({ message: 'Loan fetched successfully.', data: loan });
   } catch (err) {
     next(err);
   }

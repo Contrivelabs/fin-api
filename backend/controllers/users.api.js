@@ -11,6 +11,7 @@ const { branchValidation } = require('../validations/branches.validation');
 const tokenService = require('../utils/tokenService');
 const audit = require('../utils/auditLogger');
 const { roleValidation } = require('../validations/roles.validation');
+const unirest = require('unirest');
 
 const issueTokens = async (user) => {
   const accessToken = tokenService.createToken({ id: user._id }, '15m'); //, role: user.role
@@ -153,6 +154,39 @@ exports.createUser = async (req, res, next) => {
 		newObject.staffRoleId = String(staffRole._id);
 		newObject.customerRoleId = String(customerRole._id);
 		console.log('Saved User:', newObject);
+
+		const msg91Data = {
+			template_id: process.env.MSG91_TEMPLATE_ID,
+			short_url: '1',
+			recipients: [
+				{
+					mobiles: `91${Number(savedUser.primaryPhoneNo)}`,
+					var1: `${savedUser.otp}`,
+				},
+			],
+		};
+
+		unirest
+		.post(process.env.MSG91_URL)
+		.headers({
+			authkey: process.env.MSG91_APIKEY,
+				'Content-Type': 'application/json',
+				accept: 'application/json',
+			})
+			.send(msg91Data)
+			.end((response) => {
+				if (response.error) {
+					console.error('Error sending SMS:', response.error);
+				} else {
+					console.log('SMS Sent Successfully:', response.body);
+				}
+			});
+		return res.status(200).json({
+			message: 'done',
+			text: `OTP sent to your registered number.`,
+			data: newObject 
+		});
+
 		return res
 			.status(201)
 			.json({ message: 'User created successfully', data: newObject });
@@ -288,6 +322,38 @@ exports.resendOTP = async (req, res, next) => {
 		}
 		user.generateOTP(); // Regenerate OTP
 		await user.save();
+
+		const msg91Data = {
+			template_id: process.env.MSG91_TEMPLATE_ID,
+			short_url: '1',
+			recipients: [
+				{
+					mobiles: `91${Number(user.primaryPhoneNo)}`,
+					var1: `${user.otp}`,
+				},
+			],
+		};
+
+		unirest
+		.post(process.env.MSG91_URL)
+		.headers({
+			authkey: process.env.MSG91_APIKEY,
+				'Content-Type': 'application/json',
+				accept: 'application/json',
+			})
+			.send(msg91Data)
+			.end((response) => {
+				if (response.error) {
+					console.error('Error sending SMS:', response.error);
+				} else {
+					console.log('SMS Sent Successfully:', response.body);
+				}
+			});
+		return res.status(200).json({
+			message: 'done',
+			text: `OTP sent to your registered number.`, data: user
+		});
+
 		return res.status(200).json({ message: 'OTP resent successfully', data: user });
 	} catch (err) {
 		next(err);
